@@ -154,5 +154,18 @@ flutter:
         - asset: fonts/Inter/Inter-Black.ttf
           weight: 900
         - asset: fonts/Inter/link_icon_font.ttf
+    - family: Artegra
+      fonts:
+        - asset: assets/fonts/artegra/Artegra-Soft-Regular.otf
+        - asset: assets/fonts/artegra/Artegra-Soft-Italic.otf
+          style: italic
+        - asset: assets/fonts/artegra/Artegra-Soft-Bold.otf
+          weight: 700
+        - asset: assets/fonts/artegra/Artegra-Soft-Medium.otf
+          weight: 500
+        - asset: assets/fonts/artegra/Artegra-Soft-SemiBold.otf
+          weight: 600
+        - asset: assets/fonts/artegra/Artegra-Soft-Light.otf
+          weight: 100
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

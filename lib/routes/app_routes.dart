@@ -1,4 +1,5 @@
-import 'package:app_base_flutter/main.dart';
+import 'package:app_base_flutter/features/splash/binding/splash_binding.dart';
+import 'package:app_base_flutter/features/splash/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +10,7 @@ class AppRoutes {
   static const String INITINAL = '/';
 
   static final List<GetPage> routes = [
-    GetPage(name: INITINAL, page: () => const MyHomePage(title: "Flutter Base")),
+    GetPage(name: INITINAL, page: () => const SplashScreen(), binding: SplashBinding()),
   ];
 
   static generateRoute(RouteSettings settings) {
