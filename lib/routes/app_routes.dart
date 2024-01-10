@@ -9,7 +9,7 @@ class AppRoutes {
   static const String INITINAL = '/';
 
   static final List<GetPage> routes = [
-    GetPage(name: INITINAL, page: () => const LandingPage()),
+    GetPage(name: INITINAL, page: () => const MyHomePage(title: "Flutter Base")),
   ];
 
   static generateRoute(RouteSettings settings) {
