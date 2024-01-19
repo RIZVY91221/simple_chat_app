@@ -2,6 +2,7 @@ import 'package:app_base_flutter/core/enum.dart';
 import 'package:app_base_flutter/core/theme/colors.dart';
 import 'package:app_base_flutter/core/values/values.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class AppElevatedButton extends StatefulWidget {
   const AppElevatedButton({
@@ -22,6 +23,8 @@ class AppElevatedButton extends StatefulWidget {
     this.disabledBackgroundColor,
     this.disabledForegroundColor,
     this.borderColor,
+    this.enableSpinner = false,
+    this.spinnerSize,
   }) : super(key: key);
 
   final double? width;
@@ -39,6 +42,8 @@ class AppElevatedButton extends StatefulWidget {
   final Color? disabledForegroundColor;
   final Color? borderColor;
   final Widget? child;
+  final bool enableSpinner;
+  final double? spinnerSize;
   final VoidCallback? onPressed;
 
   @override
@@ -46,6 +51,7 @@ class AppElevatedButton extends StatefulWidget {
 }
 
 class _AppElevatedButtonState extends State<AppElevatedButton> {
+  bool isOnPressCall = false;
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -119,64 +125,94 @@ class _AppElevatedButtonState extends State<AppElevatedButton> {
 
         Widget button = FittedBox(
           fit: BoxFit.scaleDown,
-          child: Container(
-            width: chips ? null : width,
-            height: height,
-            margin: const EdgeInsets.all(AppMargin.m2),
-            child: (buttonType == ButtonType.primary)
-                ? ElevatedButton(
-                    onPressed: chips ? widget.onPressed : (widget.disabled ? null : widget.onPressed),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: widget.backgroundColor ?? Theme.of(context).primaryColor,
-                        foregroundColor: widget.foregroundColor ?? AppColor.whiteFFFFFF,
-                        disabledBackgroundColor: widget.disabledBackgroundColor ?? AppColor.disabledE4E5E7,
-                        disabledForegroundColor: widget.disabledForegroundColor ?? AppColor.whiteFFFFFF,
-                        elevation: AppElevation.e0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius))),
-                    child: widget.child ??
-                        (chips
-                            ? Text('${widget.text ?? 'Chips'}',
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: widget.disabled
-                                        ? (widget.disabledForegroundColor ?? AppColor.whiteFFFFFF)
-                                        : (widget.foregroundColor ?? AppColor.whiteFFFFFF)))
-                            : Text(
-                                '${widget.text ?? 'Button'}',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: widget.disabled
-                                        ? (widget.disabledForegroundColor ?? AppColor.whiteFFFFFF)
-                                        : (widget.foregroundColor ?? AppColor.whiteFFFFFF)),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: chips ? null : width,
+                height: height,
+                margin: const EdgeInsets.all(AppMargin.m2),
+                child: (buttonType == ButtonType.primary)
+                    ? ElevatedButton(
+                        onPressed: chips ? widget.onPressed : (widget.disabled ? null : widget.onPressed),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: widget.backgroundColor ?? Theme.of(context).primaryColor,
+                            foregroundColor: widget.foregroundColor ?? AppColor.whiteFFFFFF,
+                            disabledBackgroundColor: widget.disabledBackgroundColor ?? AppColor.disabledE4E5E7,
+                            disabledForegroundColor: widget.disabledForegroundColor ?? AppColor.whiteFFFFFF,
+                            elevation: AppElevation.e0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius))),
+                        child: widget.child ??
+                            (chips
+                                ? Text('${widget.text ?? 'Chips'}',
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                        color: widget.disabled
+                                            ? (widget.disabledForegroundColor ?? AppColor.whiteFFFFFF)
+                                            : (widget.foregroundColor ?? AppColor.whiteFFFFFF)))
+                                : Text(
+                                    '${widget.text ?? 'Button'}',
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        color: widget.disabled
+                                            ? (widget.disabledForegroundColor ?? AppColor.whiteFFFFFF)
+                                            : (widget.foregroundColor ?? AppColor.whiteFFFFFF)),
+                                  )),
+                      )
+                    : Opacity(
+                        opacity: isOnPressCall ? 0.30 : 1,
+                        child: OutlinedButton(
+                          onPressed: chips
+                              ? widget.onPressed
+                              : (widget.disabled
+                                  ? null
+                                  : !widget.enableSpinner
+                                      ? widget.onPressed
+                                      : () async {
+                                          setState(() {
+                                            isOnPressCall = true;
+                                          });
+                                          widget.onPressed?.call();
+                                          await Future.delayed(const Duration(milliseconds: 1500), () {
+                                            setState(() {
+                                              isOnPressCall = false;
+                                            });
+                                          });
+                                        }),
+                          style: OutlinedButton.styleFrom(
+                              padding: chips ? const EdgeInsets.symmetric(horizontal: 12, vertical: 10) : null,
+                              backgroundColor: widget.backgroundColor ?? AppColor.whiteFFFFFF,
+                              foregroundColor: widget.foregroundColor ?? AppColor.primaryOne4B9EFF,
+                              disabledBackgroundColor: widget.disabledBackgroundColor ?? AppColor.whiteFFFFFF,
+                              disabledForegroundColor: widget.disabledForegroundColor ?? AppColor.disabledE4E5E7,
+                              elevation: AppElevation.e0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
+                              side: BorderSide(
+                                width: chips ? AppSize.s1 : AppSize.s2,
+                                color: widget.disabled ? AppColor.disabledE4E5E7 : widget.borderColor ?? AppColor.primaryOne4B9EFF,
                               )),
-                  )
-                : OutlinedButton(
-                    onPressed: chips ? widget.onPressed : (widget.disabled ? null : widget.onPressed),
-                    style: OutlinedButton.styleFrom(
-                        padding: chips ? const EdgeInsets.symmetric(horizontal: 12, vertical: 10) : null,
-                        backgroundColor: widget.backgroundColor ?? AppColor.whiteFFFFFF,
-                        foregroundColor: widget.foregroundColor ?? AppColor.primaryOne4B9EFF,
-                        disabledBackgroundColor: widget.disabledBackgroundColor ?? AppColor.whiteFFFFFF,
-                        disabledForegroundColor: widget.disabledForegroundColor ?? AppColor.disabledE4E5E7,
-                        elevation: AppElevation.e0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
-                        side: BorderSide(
-                          width: chips ? AppSize.s1 : AppSize.s2,
-                          color: widget.disabled ? AppColor.disabledE4E5E7 : widget.borderColor ?? AppColor.primaryOne4B9EFF,
-                        )),
-                    child: widget.child ??
-                        (chips
-                            ? Text('${widget.text ?? 'Chips'}',
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: widget.disabled
-                                        ? (widget.disabledForegroundColor ?? AppColor.darkLight4D4D50)
-                                        : (widget.foregroundColor ?? AppColor.primaryOne4B9EFF)))
-                            : Text(
-                                '${widget.text ?? 'Button'}',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: widget.disabled
-                                        ? (widget.disabledForegroundColor ?? AppColor.disabledE4E5E7)
-                                        : (widget.foregroundColor ?? AppColor.primaryOne4B9EFF)),
-                              )),
-                  ),
+                          child: widget.child ??
+                              (chips
+                                  ? Text('${widget.text ?? 'Chips'}',
+                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                          color: widget.disabled
+                                              ? (widget.disabledForegroundColor ?? AppColor.darkLight4D4D50)
+                                              : (widget.foregroundColor ?? AppColor.primaryOne4B9EFF)))
+                                  : Text(
+                                      '${widget.text ?? 'Button'}',
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                          color: widget.disabled
+                                              ? (widget.disabledForegroundColor ?? AppColor.disabledE4E5E7)
+                                              : (widget.foregroundColor ?? AppColor.primaryOne4B9EFF)),
+                                    )),
+                        ),
+                      ),
+              ),
+              (buttonType == ButtonType.secondary && widget.enableSpinner == true && isOnPressCall)
+                  ? Align(
+                      alignment: Alignment.center,
+                      child: SpinKitFadingFour(color: Theme.of(context).primaryColor, size: widget.spinnerSize ?? 30),
+                    )
+                  : const SizedBox.shrink()
+            ],
           ),
         );
 

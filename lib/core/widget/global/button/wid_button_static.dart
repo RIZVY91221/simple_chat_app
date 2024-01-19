@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class AppStaticButton extends StatelessWidget {
+class AppStaticButton extends StatefulWidget {
   const AppStaticButton({
     Key? key,
     this.onPressed,
@@ -11,12 +12,14 @@ class AppStaticButton extends StatelessWidget {
     this.backgroundColor,
     this.splashColor,
     this.splashEnabled = false,
-    this.highlightEnabled = true,
+    this.highlightEnabled = false,
     this.highlightColor,
     this.borderRadius,
     this.disabled = false,
     this.child,
     this.padding,
+    this.enableSpinner = false,
+    this.spinnerSize,
     this.elevation = 0,
     this.width,
     this.height,
@@ -48,6 +51,8 @@ class AppStaticButton extends StatelessWidget {
   final bool highlightEnabled;
   final TextDecoration? decoration;
   final EdgeInsetsGeometry? padding;
+  final bool enableSpinner;
+  final double? spinnerSize;
   final VoidCallback? onPressed;
   final VoidCallback? onDoublePressed;
   final VoidCallback? onLongPress;
@@ -58,42 +63,79 @@ class AppStaticButton extends StatelessWidget {
   final Function(bool)? onHighlightChanged;
 
   @override
+  State<AppStaticButton> createState() => _AppStaticButtonState();
+}
+
+class _AppStaticButtonState extends State<AppStaticButton> {
+  bool isOnPressCall = false;
+  @override
   Widget build(BuildContext context) {
     return FittedBox(
       fit: BoxFit.scaleDown,
       child: Material(
-        color: elevation == 0 ? (backgroundColor ?? Colors.transparent) : (backgroundColor ?? Colors.white),
-        elevation: elevation,
-        borderRadius: borderRadius,
+        color: widget.elevation == 0 ? (widget.backgroundColor ?? Colors.transparent) : (widget.backgroundColor ?? Colors.white),
+        elevation: widget.elevation,
+        borderRadius: widget.borderRadius,
         animationDuration: const Duration(milliseconds: 100),
         child: InkWell(
-          onTap: disabled ? null : onPressed,
-          onDoubleTap: disabled ? null : onDoublePressed,
-          onLongPress: disabled ? null : onLongPress,
-          onTapDown: disabled ? null : onTapDown,
-          onTapUp: disabled ? null : onTapUp,
-          onHighlightChanged: disabled ? null : onHighlightChanged,
-          autofocus: autofocus,
-          focusColor: focusColor,
-          splashFactory: splashFactory,
-          borderRadius: borderRadius ?? BorderRadius.circular(5),
-          splashColor: splashEnabled ? splashColor ?? Colors.grey.withOpacity(0.2) : Colors.transparent,
-          highlightColor: highlightEnabled ? highlightColor ?? Colors.grey.withOpacity(0.2) : Colors.transparent,
+          onTap: widget.disabled
+              ? null
+              : !widget.enableSpinner
+                  ? widget.onPressed
+                  : () async {
+                      setState(() {
+                        isOnPressCall = true;
+                      });
+                      widget.onPressed?.call();
+                      await Future.delayed(const Duration(milliseconds: 1500), () {
+                        setState(() {
+                          isOnPressCall = false;
+                        });
+                      });
+                    },
+          onDoubleTap: widget.disabled ? null : widget.onDoublePressed,
+          onLongPress: widget.disabled ? null : widget.onLongPress,
+          onTapDown: widget.disabled ? null : widget.onTapDown,
+          onTapUp: widget.disabled ? null : widget.onTapUp,
+          onHighlightChanged: widget.disabled ? null : widget.onHighlightChanged,
+          autofocus: widget.autofocus,
+          focusColor: widget.focusColor,
+          splashFactory: widget.splashFactory,
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(5),
+          splashColor: widget.splashEnabled ? widget.splashColor ?? Colors.grey.withOpacity(0.2) : Colors.transparent,
+          highlightColor: widget.highlightEnabled ? widget.highlightColor ?? Colors.grey.withOpacity(0.2) : Colors.transparent,
           child: Container(
-            width: width,
-            height: height,
-            padding: padding ?? const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-            child: Center(
-                child: child ??
-                    Text(
-                      '$text',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: disabled ? disabledColor : color,
-                            decoration: decoration,
-                            decorationColor: disabled ? disabledColor : color,
-                          ),
-                    )),
+            width: widget.width,
+            height: widget.height,
+            padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                    child: Opacity(
+                  opacity: isOnPressCall ? 0.30 : 1,
+                  child: widget.child ??
+                      Text(
+                        '${widget.text}',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: widget.disabled ? widget.disabledColor : widget.color,
+                              decoration: widget.decoration,
+                              decorationColor: widget.disabled ? widget.disabledColor : widget.color,
+                            ),
+                      ),
+                )),
+                (widget.enableSpinner == true && isOnPressCall)
+                    ? Align(
+                        alignment: Alignment.center,
+                        child: SpinKitFadingFour(
+                          color: Theme.of(context).primaryColor,
+                          size: widget.spinnerSize ?? 15,
+                        ),
+                      )
+                    : const SizedBox.shrink()
+              ],
+            ),
           ),
         ),
       ),

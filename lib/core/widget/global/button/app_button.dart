@@ -118,24 +118,26 @@ class StandardPrimaryButton extends AppElevatedButton {
 }
 
 class StandardSecondaryButton extends AppElevatedButton {
-  const StandardSecondaryButton({
-    Key? key,
-    double? width,
-    double height = 50,
-    double chipsHeight = 30,
-    double? borderRadius,
-    dynamic text,
-    ButtonSize buttonSize = ButtonSize.half,
-    ButtonRound buttonRound = ButtonRound.halfRounded,
-    bool disable = false,
-    Widget? child,
-    Color? backgroundColor,
-    Color? foregroundColor,
-    Color? disabledBackgroundColor,
-    Color? disabledForegroundColor,
-    Color? borderColor,
-    VoidCallback? onPressed,
-  }) : super(
+  const StandardSecondaryButton(
+      {Key? key,
+      double? width,
+      double height = 50,
+      double chipsHeight = 30,
+      double? borderRadius,
+      dynamic text,
+      ButtonSize buttonSize = ButtonSize.half,
+      ButtonRound buttonRound = ButtonRound.halfRounded,
+      bool disable = false,
+      Widget? child,
+      Color? backgroundColor,
+      Color? foregroundColor,
+      Color? disabledBackgroundColor,
+      Color? disabledForegroundColor,
+      Color? borderColor,
+      VoidCallback? onPressed,
+      bool enableSpinner = false,
+      double? spinnerSize})
+      : super(
             key: key,
             width: width,
             height: height,
@@ -152,7 +154,9 @@ class StandardSecondaryButton extends AppElevatedButton {
             foregroundColor: foregroundColor,
             disabledBackgroundColor: disabledBackgroundColor,
             disabledForegroundColor: disabledForegroundColor,
-            borderColor: borderColor);
+            borderColor: borderColor,
+            enableSpinner: enableSpinner,
+            spinnerSize: spinnerSize);
 }
 
 class TextPrimaryButton extends AppStaticButton {
@@ -173,7 +177,7 @@ class TextPrimaryButton extends AppStaticButton {
       Color? disabledColor,
       bool autofocus = false,
       bool splashEnabled = false,
-      bool highlightEnabled = true,
+      bool highlightEnabled = false,
       TextDecoration? decoration,
       EdgeInsetsGeometry? padding,
       VoidCallback? onPressed,
@@ -181,7 +185,9 @@ class TextPrimaryButton extends AppStaticButton {
       VoidCallback? onLongPress,
       Function(TapDownDetails)? onTapDown,
       Function(TapUpDetails)? onTapUp,
-      InteractiveInkFeatureFactory? splashFactory})
+      InteractiveInkFeatureFactory? splashFactory,
+      bool enableSpinner = false,
+      double? spinnerSize})
       : super(
           key: key,
           text: text,
@@ -207,6 +213,8 @@ class TextPrimaryButton extends AppStaticButton {
           onTapDown: onTapDown,
           onTapUp: onTapUp,
           splashFactory: splashFactory,
+          spinnerSize: spinnerSize,
+          enableSpinner: enableSpinner,
           child: child,
         );
 }
