@@ -4,6 +4,8 @@ class Assets {
 
   static const String appBaseFlutter = '.env';
   static const String appBaseFlutterShorebird = 'shorebird.yaml';
+  static const String svgLeftChevron = 'assets/icons/svg/LeftChevron.svg';
   static const String svgNoData = 'assets/icons/svg/noData.svg';
+  static const String svgRightChevron = 'assets/icons/svg/RightChevron.svg';
   static const String svgShimerOne = 'assets/images/svg/shimer_one.svg';
 }

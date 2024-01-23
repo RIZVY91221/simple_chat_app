@@ -1,3 +1,4 @@
+import 'package:app_base_flutter/core/theme/colors.dart';
 import 'package:app_base_flutter/core/values/values.dart';
 import 'package:app_base_flutter/generated/assets.dart';
 import 'package:flutter/material.dart';
@@ -32,5 +33,12 @@ class AppIcon {
             width: 80,
           ),
         ),
+      );
+
+  // Has Some Default values you may change if needed
+  static inputTextField(IconData icon) => Icon(
+        icon,
+        size: AppSize.s22,
+        color: AppColor.darkLightest6C7576,
       );
 }

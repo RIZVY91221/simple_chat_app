@@ -75,6 +75,10 @@ dependencies:
   shimmer: ^3.0.0
   #spninner
   flutter_spinkit: ^5.2.0
+  #expandable
+  expandable: ^5.0.1
+  #more text
+  readmore: ^2.2.0
 
 
 dev_dependencies:
