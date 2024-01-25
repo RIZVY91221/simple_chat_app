@@ -11,7 +11,24 @@ import 'package:app_base_flutter/generated/assets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
-enum DataType { text, tap }
+enum DataType {
+  text,
+  tap,
+  dropDown,
+}
+
+/// DropDown Small Model
+class DropdownModel {
+  DropdownModel({
+    this.title = '',
+    this.valueOne,
+    this.valueTwo,
+  });
+
+  final String title;
+  final dynamic valueOne;
+  final dynamic valueTwo;
+}
 
 /// Main Widget -->
 
@@ -35,6 +52,8 @@ class WidgetInputComponent extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     this.innerPadding = EdgeInsets.zero,
     this.dataType = DataType.text,
+    this.includeExistingToDropDown = false,
+    this.dropDownItems = const [],
     this.onTap,
     this.focusNode,
     this.onEdit,
@@ -60,6 +79,8 @@ class WidgetInputComponent extends StatefulWidget {
   final DataType dataType;
   final TextInputType? inputType;
   final int? maxLength;
+  final bool includeExistingToDropDown;
+  final List<DropdownModel> dropDownItems;
   final Function()? onTap;
   final FocusNode? focusNode;
   final Function(String title, String value)? onEdit;
@@ -106,11 +127,18 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
                   onTap: widget.pageReadOnly
                       ? null
                       : () {
-                          Future.delayed(AppDuration.milliseconds100, () => FocusManager.instance.primaryFocus?.unfocus());
-                          setState(() {
-                            enable = !enable;
-                            Future.delayed(AppDuration.milliseconds100, () => FocusScope.of(context).requestFocus(widget.focusNode));
-                          });
+                          if (widget.dataType == DataType.tap) {
+                            widget.onTap?.call();
+                          } else {
+                            Future.delayed(AppDuration.milliseconds100, () => FocusManager.instance.primaryFocus?.unfocus());
+                            setState(() {
+                              enable = !enable;
+                              Future.delayed(AppDuration.milliseconds100, () => FocusScope.of(context).requestFocus(widget.focusNode));
+                            });
+                            if (widget.dataType == DataType.dropDown) {
+                              controllerExpandable.expanded = dropdownExpansion = !dropdownExpansion;
+                            }
+                          }
                         },
                   child: Row(
                     children: [
@@ -133,7 +161,7 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
         ),
 
         /// For DropDown
-        expanded: const SizedBox.shrink(),
+        expanded: (widget.dataType == DataType.dropDown) ? _dropdown(context) : const SizedBox.shrink(),
       ),
     );
   }
@@ -149,6 +177,66 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
           : enable
               ? _textField()
               : _readMoreTextWidget(textTitle),
+    );
+  }
+
+  /// Dropdown Element
+  Center _dropdown(BuildContext context) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10, left: 0, right: 0),
+        width: MediaQuery.of(context).size.width - 0,
+        constraints: const BoxConstraints(maxHeight: 195),
+        color: Colors.white,
+        child: Card(
+          elevation: 0,
+          color: AppColor.whiteFFFFFF,
+          shadowColor: AppColor.blackOpacity40000000,
+          child: ListView(
+            shrinkWrap: true,
+            physics: const ClampingScrollPhysics(),
+            children: _getDropDownItems(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Get Dropdown Menu Items
+  List<Widget> _getDropDownItems() {
+    if (widget.includeExistingToDropDown) {
+      return widget.dropDownItems.map((e) => _dropDownMenuItem(e)).toList();
+    } else {
+      return widget.dropDownItems.where((e) => (e.title != (widget.value ?? textTitle))).toList().map((e) => _dropDownMenuItem(e)).toList();
+    }
+  }
+
+  /// Dropdown Menu Style
+  Widget _dropDownMenuItem(DropdownModel dropdownModel) {
+    return InkWell(
+      onTap: () {
+        setState(() => enable = !enable);
+        bool isEqual = (textTitle == dropdownModel.title);
+        if (isEqual) {
+          if (!enable) AppToasts.error(msg: 'Already selected');
+        } else {
+          textValue = dropdownModel.valueOne; // Global Variable
+          setState(() => textTitle = dropdownModel.title); // Global Variable);
+          widget.onEdit?.call(textTitle, textValue);
+        }
+        controllerExpandable.expanded = dropdownExpansion = !dropdownExpansion;
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            child: Text(dropdownModel.title, style: AppTextStyle.bodyVerySmall(color: AppColor.dark202125)),
+          ),
+          const AppDivider(),
+        ],
+      ),
     );
   }
 
@@ -192,7 +280,10 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
             padding: const EdgeInsets.only(right: 20),
             child: WidgetReadMoreText(
               text: text.toDataWhenNullOrEmpty(widget.labelText),
-              textStyle: AppTextStyle.bodySmall(color: AppColor.dark202125),
+              textStyle: AppTextStyle.bodySmall(
+                  color: (widget.includeExistingToDropDown && enable && widget.dataType == DataType.dropDown)
+                      ? AppColor.disabledE4E5E7
+                      : AppColor.dark202125),
               moreStyle: AppTextStyle.bodySmall(color: AppColor.primaryOne4B9EFF),
               lessStyle: AppTextStyle.bodySmall(color: AppColor.primaryOne4B9EFF),
             ),
@@ -221,8 +312,13 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
             widget.onEdit?.call(textTitle, textValue);
           }
         }
+
+        /// Dropdown
+        if (widget.dataType == DataType.dropDown) {
+          controllerExpandable.expanded = dropdownExpansion = !dropdownExpansion;
+        }
       },
-      child: enable ? const SizedBox.shrink() : buttonWidget(widgetOnEdit()),
+      child: enable ? widgetOnSave() : buttonWidget(widgetOnEdit()),
     );
   }
 
@@ -242,6 +338,8 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
     switch (widget.dataType) {
       case DataType.text:
         return widget.sideButton ?? _editSaveText(widget.sideButtonText);
+      case DataType.dropDown:
+        return widget.sideButton ?? _editSaveText(widget.sideButtonText);
       case DataType.tap:
         return widget.sideButton ?? appSVG(Assets.svgLeftChevron);
     }
@@ -251,7 +349,9 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
   Widget widgetOnSave() {
     switch (widget.dataType) {
       case DataType.text:
-        return widget.sideButtonPressed ?? _editSaveText(widget.sideButtonTextPressed);
+        return widget.sideButtonPressed ?? const SizedBox.shrink(); //_editSaveText(widget.sideButtonTextPressed);
+      case DataType.dropDown:
+        return widget.sideButtonPressed ?? Icon(Icons.keyboard_arrow_down_rounded, size: 24, color: AppColor.inputBorderRegularE4E5E7);
       case DataType.tap:
         return widget.sideButtonPressed ?? appSVG(Assets.svgLeftChevron, color: widget.sideButtonColor);
     }
@@ -283,6 +383,7 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
     widget.onFocusChange?.call(focus.hasFocus);
     setState(() {
       enable = focus.hasFocus;
+      controllerExpandable.expanded = dropdownExpansion = focus.hasFocus;
     });
     if (widget.dataType == DataType.text) {
       controller.addListener(() {
