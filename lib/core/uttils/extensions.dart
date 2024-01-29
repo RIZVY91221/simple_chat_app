@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 extension Strings on String? {
   // If Null then Blank
   String empty() => '';
@@ -10,4 +12,15 @@ extension Strings on String? {
 
   // If Empty or Null then it returns provided Data
   String toDataWhenNullOrEmpty(dynamic data) => toBlank().isEmpty ? '$data' : toBlank();
+
+  // Date Time Format
+  String dateTimeFormat({String format = 'dd MMM yy, kk:mm', String fallback = ''}) {
+    if (this != null && this != '') {
+      try {
+        DateTime parsedDate = DateTime.parse(this!);
+        return DateFormat(format).format(parsedDate);
+      } catch (_) {}
+    }
+    return fallback;
+  }
 }

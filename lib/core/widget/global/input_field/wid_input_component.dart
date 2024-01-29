@@ -5,17 +5,14 @@ import 'package:app_base_flutter/core/uttils/extensions.dart';
 import 'package:app_base_flutter/core/uttils/icons.dart';
 import 'package:app_base_flutter/core/uttils/toasts.dart';
 import 'package:app_base_flutter/core/values/values.dart';
+import 'package:app_base_flutter/core/widget/global/dailog/wid_date_time_dialogue.dart';
 import 'package:app_base_flutter/core/widget/global/divider/wid_divider.dart';
 import 'package:app_base_flutter/core/widget/global/text/wid_readmore_text.dart';
 import 'package:app_base_flutter/generated/assets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
-enum DataType {
-  text,
-  tap,
-  dropDown,
-}
+enum DataType { text, tap, dropDown, date }
 
 /// DropDown Small Model
 class DropdownModel {
@@ -45,6 +42,8 @@ class WidgetInputComponent extends StatefulWidget {
     this.value,
     this.initialValue,
     this.secondaryValue,
+    this.dateTimeFormat = 'dd MMM yy, hh:mm',
+    this.disableDate,
     this.readOnly = true,
     this.dividerIndent = 0,
     this.maxLength,
@@ -71,6 +70,8 @@ class WidgetInputComponent extends StatefulWidget {
   final Widget? sideButtonPressed;
   final String? initialValue;
   final String? secondaryValue;
+  final String dateTimeFormat;
+  final bool? disableDate;
   final bool readOnly;
   final double dividerIndent;
   final bool pageReadOnly;
@@ -138,6 +139,9 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
                             if (widget.dataType == DataType.dropDown) {
                               controllerExpandable.expanded = dropdownExpansion = !dropdownExpansion;
                             }
+                          }
+                          if (widget.dataType == DataType.date) {
+                            dateTimeDialog();
                           }
                         },
                   child: Row(
@@ -317,6 +321,9 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
         if (widget.dataType == DataType.dropDown) {
           controllerExpandable.expanded = dropdownExpansion = !dropdownExpansion;
         }
+        if (widget.dataType == DataType.date) {
+          dateTimeDialog();
+        }
       },
       child: enable ? widgetOnSave() : buttonWidget(widgetOnEdit()),
     );
@@ -340,6 +347,8 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
         return widget.sideButton ?? _editSaveText(widget.sideButtonText);
       case DataType.dropDown:
         return widget.sideButton ?? _editSaveText(widget.sideButtonText);
+      case DataType.date:
+        return widget.sideButton ?? _editSaveText(widget.sideButtonText);
       case DataType.tap:
         return widget.sideButton ?? appSVG(Assets.svgLeftChevron);
     }
@@ -352,9 +361,36 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
         return widget.sideButtonPressed ?? const SizedBox.shrink(); //_editSaveText(widget.sideButtonTextPressed);
       case DataType.dropDown:
         return widget.sideButtonPressed ?? Icon(Icons.keyboard_arrow_down_rounded, size: 24, color: AppColor.inputBorderRegularE4E5E7);
+      case DataType.date:
+        return widget.sideButtonPressed ?? Icon(Icons.calendar_month, size: 18, color: widget.sideButtonColor ?? Colors.black);
       case DataType.tap:
         return widget.sideButtonPressed ?? appSVG(Assets.svgLeftChevron, color: widget.sideButtonColor);
     }
+  }
+
+  void dateTimeDialog() async {
+    DateTime initialDate = DateTime.now();
+
+    if (widget.secondaryValue != null) {
+      if (widget.secondaryValue != 'null') initialDate = DateTime.parse(widget.secondaryValue!);
+    }
+
+    await datePickerDialogue(
+        initialDate: initialDate,
+        onChange: (value) {
+          if (value != null) {
+            bool isEqual = (textTitle == '$value'.dateTimeFormat(format: widget.dateTimeFormat));
+            if (isEqual) {
+              AppToasts.error(msg: 'Select different date');
+            } else {
+              setState(() => textTitle = '$value'.dateTimeFormat(format: widget.dateTimeFormat));
+              textValue = '$value';
+              widget.onEdit?.call(textTitle, textValue);
+            }
+          }
+        },
+        isBefore: widget.disableDate);
+    setState(() => enable = !enable);
   }
 
   /// Divider
