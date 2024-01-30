@@ -53,6 +53,7 @@ class WidgetInputComponent extends StatefulWidget {
     this.dataType = DataType.text,
     this.includeExistingToDropDown = false,
     this.dropDownItems = const [],
+    this.suggestionList = const [],
     this.onTap,
     this.focusNode,
     this.onEdit,
@@ -83,6 +84,7 @@ class WidgetInputComponent extends StatefulWidget {
   final bool includeExistingToDropDown;
   final List<DropdownModel> dropDownItems;
   final Function()? onTap;
+  final List<String> suggestionList;
   final FocusNode? focusNode;
   final Function(String title, String value)? onEdit;
   final String? Function(bool?)? onFocusChange;
@@ -101,6 +103,10 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
   late FocusNode focus;
 
   static FocusNode sharedFocusNode = FocusNode();
+
+  OverlayEntry? _overlayEntry;
+
+  final LayerLink _layerLink = LayerLink();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -248,23 +254,26 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
   Widget _textField() {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
-      child: TextField(
-        maxLength: widget.maxLength,
-        controller: controller,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColor.dark202125),
-        readOnly: widget.readOnly,
-        focusNode: widget.focusNode,
-        keyboardType: widget.inputType ?? TextInputType.multiline,
-        maxLines: null,
-        onChanged: (v) {},
-        decoration: InputDecoration(
-          enabled: enable,
-          labelText: widget.labelText,
-          labelStyle: controller.text.isNotEmpty ? AppTextStyle.bodyExtraSmallPlus() : Theme.of(context).textTheme.bodySmall,
-          border: InputBorder.none,
-          hintText: widget.hints ?? '-',
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
+      child: CompositedTransformTarget(
+        link: _layerLink,
+        child: TextField(
+          maxLength: widget.maxLength,
+          controller: controller,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColor.dark202125),
+          readOnly: widget.readOnly,
+          focusNode: widget.focusNode,
+          keyboardType: widget.inputType ?? TextInputType.multiline,
+          maxLines: null,
+          onChanged: (v) {},
+          decoration: InputDecoration(
+            enabled: enable,
+            labelText: widget.labelText,
+            labelStyle: controller.text.isNotEmpty ? AppTextStyle.bodyExtraSmallPlus() : Theme.of(context).textTheme.bodySmall,
+            border: InputBorder.none,
+            hintText: widget.hints ?? '-',
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+          ),
         ),
       ),
     );
@@ -422,6 +431,12 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
       controllerExpandable.expanded = dropdownExpansion = focus.hasFocus;
     });
     if (widget.dataType == DataType.text) {
+      if (widget.suggestionList.isNotEmpty) {
+        setState(() {
+          _overlayEntry = _createOverlayEntry(context);
+          Overlay.of(context).insert(_overlayEntry!);
+        });
+      }
       controller.addListener(() {
         bool isEqual = (textTitle == controller.text);
         if (isEqual) {
@@ -446,5 +461,53 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
   void dispose() {
     focus.removeListener(onFocusChange);
     super.dispose();
+  }
+
+  OverlayEntry _createOverlayEntry(BuildContext context) {
+    RenderBox renderBox = context.findRenderObject()! as RenderBox;
+    var size = renderBox.size;
+
+    return OverlayEntry(
+        builder: (context) => Positioned(
+              width: size.width,
+              child: CompositedTransformFollower(
+                link: _layerLink,
+                showWhenUnlinked: false,
+                targetAnchor: Alignment.topCenter,
+                followerAnchor: Alignment.topCenter,
+                offset: Offset(0.0, size.height + 5.0),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 30.0, right: 18),
+                  child: Material(
+                    elevation: 2.0,
+                    clipBehavior: Clip.hardEdge,
+                    color: AppColor.whiteFFFFFF,
+                    child: ListView(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        physics: const ClampingScrollPhysics(),
+                        children: widget.suggestionList
+                            .map((e) => InkWell(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () {
+                                    textTitle = textValue = controller.text = e;
+                                    setState(() {
+                                      _overlayEntry?.remove();
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
+                                    child: Text(
+                                      e,
+                                      style: AppTextStyle.bodyVerySmall(color: AppColor.dark202125),
+                                    ),
+                                  ),
+                                ))
+                            .toList()),
+                  ),
+                ),
+              ),
+            ));
   }
 }
