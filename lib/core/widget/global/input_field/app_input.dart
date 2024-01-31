@@ -305,3 +305,43 @@ class BaseDateInputField extends WidgetInputComponent {
           onEdit: onEdit,
         );
 }
+
+class BaseUploadInputField extends WidgetInputComponent {
+  const BaseUploadInputField({
+    Key? key,
+    required String labelText,
+    String? hints,
+    String sideButtonText = 'Upload',
+    String? helpText,
+    bool isUploadField = true,
+    Color? sideButtonColor,
+    String? initialValue,
+    bool? disableDate,
+    bool readOnly = false,
+    double dividerIndent = 0,
+    bool pageReadOnly = false,
+    EdgeInsetsGeometry padding = EdgeInsets.zero,
+    EdgeInsetsGeometry innerPadding = EdgeInsets.zero,
+    DataType dataType = DataType.tap,
+    Function()? onTap,
+    FocusNode? focusNode,
+  }) : super(
+          key: key,
+          labelText: labelText,
+          hints: hints,
+          helpText: helpText,
+          sideButtonText: sideButtonText,
+          sideButtonColor: sideButtonColor,
+          initialValue: initialValue,
+          readOnly: readOnly,
+          dataType: dataType,
+          disableDate: disableDate,
+          dividerIndent: dividerIndent,
+          pageReadOnly: pageReadOnly,
+          padding: padding,
+          innerPadding: innerPadding,
+          isUploadField: isUploadField,
+          onTap: onTap,
+          focusNode: focusNode,
+        );
+}
