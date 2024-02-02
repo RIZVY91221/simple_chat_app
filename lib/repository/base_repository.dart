@@ -19,4 +19,5 @@ abstract class BaseRepository {
       );
   //local_base
   Future initBoxes(List<String> boxs);
+  Future<List<Map<String, dynamic>>> getAddress(String postalCode);
 }

@@ -3,6 +3,7 @@
 import 'package:app_base_flutter/core/values/values.dart';
 import 'package:app_base_flutter/core/widget/global/input_field/wid_input_component.dart';
 import 'package:app_base_flutter/core/widget/global/input_field/wid_input_custom_radio.dart';
+import 'package:app_base_flutter/core/widget/global/input_field/wid_input_postal_code.dart';
 import 'package:app_base_flutter/core/widget/global/input_field/wid_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -468,4 +469,15 @@ class BaseCheckboxGroupInput extends WidgetCustomGroupInput {
             isHorizontal: isHorizontal,
             titleChild: titleChild,
             disable: disable);
+}
+
+class BasePostalCodeInputField extends WidgetPostalCodeInput {
+  const BasePostalCodeInputField(
+      {Key? key,
+      EdgeInsets? innerPadding,
+      Function(String)? onEditPostalCode,
+      Function(String)? onEditAddress,
+      Function(String)? onEditUnit})
+      : super(
+            key: key, innerPadding: innerPadding, onEditPostalCode: onEditPostalCode, onEditAddress: onEditAddress, onEditFlor: onEditUnit);
 }

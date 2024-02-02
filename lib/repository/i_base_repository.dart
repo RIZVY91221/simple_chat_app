@@ -20,4 +20,9 @@ class ImplementBaseRepository implements BaseRepository {
   Future initBoxes(List<String> boxes) {
     return _localDataSource.initBoxes(boxes);
   }
+
+  @override
+  Future<List<Map<String, dynamic>>> getAddress(String postalCode) async {
+    return await _remoteDataSource.getAddress(postalCode);
+  }
 }

@@ -8,4 +8,6 @@ abstract class BaseRemoteDataSource {
   @factoryMethod
   static ImplementBaseRemoteDataSource create(DioClient dioClient, RestClient restClient) =>
       ImplementBaseRemoteDataSource(dioClient, restClient);
+
+  Future<List<Map<String, dynamic>>> getAddress(String postalCode);
 }

@@ -428,15 +428,18 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
   }
 
   /// Edit | Save Text
-  Text _editSaveText(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-          fontSize: 14,
-          fontWeight: AppFontWeight.w400,
-          color: widget.sideButtonColor ?? AppColor.primaryOne4B9EFF,
-          decoration: TextDecoration.underline,
-          decorationColor: widget.sideButtonColor ?? AppColor.primaryOne4B9EFF),
+  Widget _editSaveText(String text) {
+    return Opacity(
+      opacity: widget.readOnly ? 0.45 : 1,
+      child: Text(
+        text,
+        style: TextStyle(
+            fontSize: 14,
+            fontWeight: AppFontWeight.w400,
+            color: widget.sideButtonColor ?? AppColor.primaryOne4B9EFF,
+            decoration: TextDecoration.underline,
+            decorationColor: widget.sideButtonColor ?? AppColor.primaryOne4B9EFF),
+      ),
     );
   }
 
