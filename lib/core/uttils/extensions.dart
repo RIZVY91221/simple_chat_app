@@ -13,6 +13,15 @@ extension Strings on String? {
   // If Empty or Null then it returns provided Data
   String toDataWhenNullOrEmpty(dynamic data) => toBlank().isEmpty ? '$data' : toBlank();
 
+  // Custom Trimmer from
+  String toSubstring({int? fromStart, int? fromEnd}) {
+    if (this != null) {
+      String txt = this!.trim();
+      return txt.substring((fromStart ?? 0), txt.length - (fromEnd ?? 0));
+    }
+    return '';
+  }
+
   // Date Time Format
   String dateTimeFormat({String format = 'dd MMM yy, kk:mm', String fallback = ''}) {
     if (this != null && this != '') {
