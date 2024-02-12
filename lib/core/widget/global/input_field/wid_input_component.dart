@@ -35,6 +35,10 @@ class WidgetInputComponent extends StatefulWidget {
     required this.labelText,
     this.hints,
     this.helpText,
+    this.errorText,
+    this.isError = false,
+    this.prefix,
+    this.prefixText,
     this.sideButtonText = 'Edit',
     this.sideButtonTextPressed = 'Save',
     this.sideButton,
@@ -59,6 +63,7 @@ class WidgetInputComponent extends StatefulWidget {
     this.onTap,
     this.focusNode,
     this.onEdit,
+    this.onChange,
     this.onFocusChange,
     this.inputType,
   }) : super(key: key);
@@ -67,6 +72,10 @@ class WidgetInputComponent extends StatefulWidget {
   final String labelText;
   final String? hints;
   final String? helpText;
+  final String? errorText;
+  final bool isError;
+  final Widget? prefix;
+  final String? prefixText;
   final String sideButtonText;
   final String sideButtonTextPressed;
   final Widget? sideButton;
@@ -91,6 +100,7 @@ class WidgetInputComponent extends StatefulWidget {
   final List<String> suggestionList;
   final FocusNode? focusNode;
   final Function(String title, String value)? onEdit;
+  final Function(String, TextEditingController)? onChange;
   final String? Function(bool?)? onFocusChange;
 
   @override
@@ -269,16 +279,17 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
           focusNode: widget.focusNode,
           keyboardType: widget.inputType ?? TextInputType.multiline,
           maxLines: null,
-          onChanged: (v) {},
+          onChanged: (v) => widget.onChange?.call(v, controller),
           decoration: InputDecoration(
-            enabled: enable,
-            labelText: widget.labelText,
-            labelStyle: controller.text.isNotEmpty ? AppTextStyle.bodyExtraSmallPlus() : Theme.of(context).textTheme.bodySmall,
-            border: InputBorder.none,
-            hintText: widget.hints ?? '-',
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-          ),
+              enabled: enable,
+              labelText: widget.labelText,
+              labelStyle: controller.text.isNotEmpty ? AppTextStyle.bodyExtraSmallPlus() : Theme.of(context).textTheme.bodySmall,
+              border: InputBorder.none,
+              hintText: widget.hints ?? '-',
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              prefix: widget.prefix ??
+                  (widget.prefixText != null ? AppText.bodyVerySmall(widget.prefixText, color: AppColor.dark202125) : null)),
         ),
       ),
     );
@@ -517,7 +528,7 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
   }
 
   Widget _helpText() {
-    return widget.helpText != null
+    return (widget.helpText != null && widget.helpText!.isNotEmpty) || (widget.errorText != null && widget.errorText!.isNotEmpty)
         ? Padding(
             padding: widget.innerPadding,
             child: Padding(
@@ -527,12 +538,15 @@ class _WidgetInputComponentState extends State<WidgetInputComponent> {
                   Icon(
                     Icons.info_outline,
                     size: 12,
-                    color: AppColor.inputTitleColor,
+                    color: widget.isError ? AppColor.errorFE6C44 : AppColor.inputTitleColor,
                   ),
                   const SizedBox(
                     width: 4,
                   ),
-                  AppText.bodyExtraSmall(widget.helpText)
+                  AppText.bodyExtraSmall(
+                    widget.isError ? widget.errorText : widget.helpText,
+                    color: widget.isError ? AppColor.errorFE6C44 : AppColor.inputTitleColor,
+                  )
                 ],
               ),
             ),
