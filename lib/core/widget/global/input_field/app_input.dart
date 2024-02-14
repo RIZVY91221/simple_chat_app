@@ -1,5 +1,8 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:app_base_flutter/core/values/values.dart';
 import 'package:app_base_flutter/core/widget/global/input_field/wid_input_component.dart';
+import 'package:app_base_flutter/core/widget/global/input_field/wid_input_custom_radio.dart';
 import 'package:app_base_flutter/core/widget/global/input_field/wid_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -365,4 +368,55 @@ class BaseUploadInputField extends WidgetInputComponent {
             onTap: onTap,
             focusNode: focusNode,
             onChange: onChange);
+}
+
+class BaseRadioInput extends CustomItems {
+  BaseRadioInput({
+    Key? key,
+    String? title = 'Radio Button',
+    required String name,
+    required String value,
+    bool isIconRequired = false,
+    double? boxSize,
+    Color? disableColor,
+    Function(String)? onChangeItem,
+    Widget Function(bool)? titleChild,
+  }) : super(
+          key: key,
+          title: title,
+          name: name,
+          value: value,
+          isIconRequired: isIconRequired,
+          boxSize: boxSize,
+          isCheckbox: false,
+          disableColor: disableColor,
+          onChangeItem: onChangeItem,
+          titleChild: titleChild,
+        );
+}
+
+class BaseRadioGroupInput extends WidgetCustomGroupInput {
+  BaseRadioGroupInput({
+    Key? key,
+    required List<String> typeList,
+    Function(String)? onChangeValue,
+    required String initialValue,
+    bool isIconRequired = false,
+    double? boxSize,
+    Color? disableColor,
+    bool isHorizontal = false,
+    Widget Function(bool)? titleChild,
+    List<String>? disable,
+  }) : super(
+            key: key,
+            initialValue: initialValue,
+            typeList: typeList,
+            onChangeValue: onChangeValue,
+            isIconRequired: isIconRequired,
+            boxSize: boxSize,
+            disableColor: disableColor,
+            isCheckbox: false,
+            isHorizontal: isHorizontal,
+            titleChild: titleChild,
+            disable: disable);
 }
