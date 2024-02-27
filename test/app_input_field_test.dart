@@ -126,6 +126,13 @@ Widget baseCheckboxInputGroup() => BaseCheckboxGroupInput(
       },
     );
 
+///Base checkbox group input usage....
+Widget basePostalCodeInputFiled() => BasePostalCodeInputField(
+      onEditPostalCode: (v) {},
+      onEditAddress: (v) {},
+      onEditUnit: (v) {},
+    );
+
 class InputFieldTestScreen extends StatelessWidget {
   const InputFieldTestScreen({Key? key}) : super(key: key);
 
@@ -166,7 +173,9 @@ class InputFieldTestScreen extends StatelessWidget {
             AppGap.vertical10,
             baseCheckboxInputField(),
             AppGap.vertical10,
-            baseCheckboxInputGroup()
+            baseCheckboxInputGroup(),
+            AppGap.vertical10,
+            basePostalCodeInputFiled()
           ],
         ),
       ),
