@@ -1,4 +1,4 @@
-package com.example.app_base_flutter
+package com.example.lenadena
 
 import io.flutter.embedding.android.FlutterActivity
 

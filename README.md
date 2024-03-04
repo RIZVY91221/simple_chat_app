@@ -15,7 +15,7 @@ Additional Package Used
 
 ## Getting Started
 
-[Repository link](https://bitbucket.org/techteam-bd/app-base-flutter/src/main/)
+[Repository link](https://github.com/RIZVY91221/lenadena.git)
 <br>
 To get a local copy up and running follow these steps.
 
@@ -32,7 +32,7 @@ To get a local copy up and running follow these steps.
 
 1. Clone the repo
     ```sh
-    ssh: git clone user@bitbucket.org/techteam-bd/app-base-flutter.git
+    ssh: git clone https://github.com/RIZVY91221/lenadena.git
     ```
 2. Environment Setup
     - Create `.env` file cp `.env.example` to `.env `
