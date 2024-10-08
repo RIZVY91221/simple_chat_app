@@ -22,7 +22,7 @@ class SplashScreen extends GetWidget {
               Expanded(
                 child: Center(
                   child: Image.asset(
-                    Assets.iconsIogo,
+                    Assets.iconsIcon,
                     width: Get.width / 2,
                   ),
                 ),
@@ -39,7 +39,7 @@ class SplashScreen extends GetWidget {
                       ),
                     ),
                     const Text(
-                      "Mistri Bazar Ltd",
+                      "XYZ",
                       style: TextStyle(color: Colors.blue, fontSize: 16, fontFamily: "Artegra"),
                     )
                   ],

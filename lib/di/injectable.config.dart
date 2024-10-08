@@ -51,7 +51,7 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i4.GetMaterialApp>(
         () => app.provideGetMaterialApp(gh<_i3.BaseLocalDataSource>()));
     gh.singleton<_i5.ImplementBaseLocalDataSource>(
-        _i5.ImplementBaseLocalDataSource());
+        () => _i5.ImplementBaseLocalDataSource());
     gh.lazySingleton<_i6.RestClient>(() => _i6.RestClient());
     await gh.factoryAsync<_i7.SharedPreferences>(
       () => preferenceModule.prefs,
@@ -71,7 +71,7 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i6.RestClient>(),
             ));
     gh.singleton<_i12.ImplementBaseSharedPreference>(
-        _i12.ImplementBaseSharedPreference(gh<_i7.SharedPreferences>()));
+        () => _i12.ImplementBaseSharedPreference(gh<_i7.SharedPreferences>()));
     gh.factory<_i13.BaseRemoteDataSource>(
         () => _i13.BaseRemoteDataSource.create(
               gh<_i10.DioClient>(),

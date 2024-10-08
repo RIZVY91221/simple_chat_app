@@ -1,4 +1,4 @@
-# app_base_flutter
+# SIMPLE CHAT APP
 
 A new Flutter project.
 
@@ -15,7 +15,7 @@ Additional Package Used
 
 ## Getting Started
 
-[Repository link](https://github.com/RIZVY91221/lenadena.git)
+[Repository link](https://github.com/RIZVY91221/simple_chat_app.git)
 <br>
 To get a local copy up and running follow these steps.
 
@@ -32,7 +32,7 @@ To get a local copy up and running follow these steps.
 
 1. Clone the repo
     ```sh
-    ssh: git clone https://github.com/RIZVY91221/lenadena.git
+    ssh: git clone https://github.com/RIZVY91221/simple_chat_app.git
     ```
 2. Environment Setup
     - Create `.env` file cp `.env.example` to `.env `

@@ -18,4 +18,5 @@ class Assets {
   static const String svgNoData = 'assets/icons/svg/noData.svg';
   static const String svgRightChevron = 'assets/icons/svg/RightChevron.svg';
   static const String svgShimerOne = 'assets/images/svg/shimer_one.svg';
+
 }
