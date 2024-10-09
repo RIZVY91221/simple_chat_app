@@ -14,8 +14,13 @@ class SplashController extends GetxController {
   void onInit() async {
     await repository.initBoxes(HiveConstants.INIT_BOXS);
     Timer(const Duration(milliseconds: 400), () async {
-      Get.offAll(const MyHomePage(title: "Flutter App"));
+      if (repository.accessToken.isNotEmpty) {
+        Get.offAllNamed(AppRoutes.CHAT_LIST);
+      } else {
+        Get.offAllNamed(AppRoutes.LOGIN_SCREEN);
+      }
     });
     super.onInit();
   }
+
 }

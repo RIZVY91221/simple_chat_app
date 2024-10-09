@@ -7,4 +7,10 @@ abstract class BaseLocalDataSource {
   factory BaseLocalDataSource.from() => ImplementBaseLocalDataSource();
 
   Future initBoxes(List<String> boxs);
+
+  String get accessToken;
+  String get currentLocale;
+  Future<void> setCurrentLocale(String localeCode);
+  Future<void> setAccessToken(String accessToken);
+  Future<void> logout();
 }

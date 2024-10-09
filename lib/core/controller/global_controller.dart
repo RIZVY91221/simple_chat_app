@@ -1,5 +1,6 @@
 import 'package:app_base_flutter/core/uttils/toasts.dart';
 import 'package:app_base_flutter/repository/base_repository.dart';
+import 'package:app_base_flutter/translations/app_translations.dart';
 import 'package:flutter/material.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
@@ -12,6 +13,7 @@ class GlobalController extends GetxController {
   final _shorebirdCodePush = ShorebirdCodePush();
   var isCheckingForUpdate = false.obs;
   var currentPatchNumber = 0.obs;
+  var currentLocale = "".obs;
 
   @override
   void onInit() {
@@ -78,4 +80,19 @@ class GlobalController extends GetxController {
         isCheckingForUpdate.value = false;
         Restart.restartApp();
       });
+
+  void setLocale(String localeCode) {
+    repository.setCurrentLocale(localeCode);
+    currentLocale.value = localeCode;
+    AppTranslation.useTranslatorDecider(true);
+  }
+
+  void setInitialLocale(String localeCode) {
+    repository.setCurrentLocale(localeCode);
+    currentLocale.value = localeCode;
+  }
+
+  String getCurrentLocale() {
+    return currentLocale.value = repository.currentLocale;
+  }
 }

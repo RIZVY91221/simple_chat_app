@@ -100,9 +100,10 @@ abstract class BaseController extends GetxController {
     } on AppException catch (exception) {
       _exception = exception;
       showErrorMessage(exception.toString());
-    } catch (error) {
+    } catch (error,trac) {
       _exception = AppException(message: "$error");
       logger.e("Controller>>>>>> error $error");
+      logger.e("Controller>>>>>> trac $trac");
     }
 
     if (onError != null) onError(_exception);
