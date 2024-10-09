@@ -46,7 +46,13 @@ class Env {
     }
     return flavor;
   }
+  static String get loginEmail {
+    return dotenv.env["LOGIN_EMAIL"] ?? "NOT FOUND";
+  }
 
+  static String get loginPassword {
+    return dotenv.env["LOGIN_PASSWORD"] ?? "NOT FOUND";
+  }
   static loadBuildConfig() {
     EnvVariables envVariables = EnvVariables(
       appName: appName,

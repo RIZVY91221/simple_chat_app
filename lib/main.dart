@@ -1,10 +1,13 @@
 import 'package:app_base_flutter/core/values/sizeconfig.dart';
+import 'package:app_base_flutter/datasource/local_data_source/constants/hive_constants.dart';
 import 'package:app_base_flutter/di/injectable.dart';
 import 'package:app_base_flutter/environment/environment.dart';
+import 'package:app_base_flutter/repository/base_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -19,8 +22,14 @@ Future<void> main() async {
     DeviceOrientation.landscapeLeft,
   ]).then((_) async {
     await initHiveStorage();
+    await initHiveForFlutter();
     await configureDependencies();
-    runApp(const MyApp());
+    final client=await initGraphQL();
+    final ValueNotifier<GraphQLClient> clientNotifier = ValueNotifier(client);
+    runApp(GraphQLProvider(
+      client: clientNotifier,
+      child: const MyApp(),
+    ));
   });
 }
 
@@ -29,6 +38,23 @@ Future initHiveStorage() async {
   return Hive.init(appDocumentDirectory.path);
 }
 
+Future<GraphQLClient> initGraphQL() async {
+  // Initialize GraphQL client
+  final HttpLink httpLink = HttpLink(
+    dotenv.env['BASE_URL'] ?? 'https://api-staging.qawqal.com/graphql',
+  );
+  await Hive.openBox(HiveConstants.SESSIONS.SESSION_AUTH_BOX);
+  final token=getIt<BaseRepository>().accessToken;
+  final AuthLink authLink = AuthLink(
+    getToken: () async => "Bearer $token", // Replace with your token
+  );
+  final Link link = authLink.concat(httpLink);
+  final GraphQLClient client = GraphQLClient(
+    link: link,
+    cache: GraphQLCache(store: HiveStore()),
+  );
+  return client;
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
